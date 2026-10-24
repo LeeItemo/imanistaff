@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Imani Laboratory hospital and wellness website for the Ruai and Joska branches."
+    />
+    <title>Imani Laboratory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <style>
+      :root {
+        --staff-ink: #18352e;
+        --staff-muted: #6d807a;
+        --staff-line: #dce6e1;
+        --staff-green: #1b7257;
+        --staff-green-dark: #14543f;
+        --staff-coral: #d9795d;
+        --staff-bg: #eaf2f8;
+      }
+      body {
+        min-width: 320px;
+        margin: 0;
+        background: var(--staff-bg);
+        color: var(--staff-ink);
+        font-family: 'DM Sans', sans-serif;
+      }
+      .page-shell { display: none !important; }
+      .staff-app { min-height: 100vh; }
+      .staff-header {
+        min-height: 76px;
+        padding: 12px max(28px, calc((100vw - 1240px) / 2));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        background: #fff;
+        border-bottom: 1px solid var(--staff-line);
+      }
+      .staff-brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+      .staff-brand-mark {
+        width: 42px; height: 42px; display: grid; place-items: center;
+        background: var(--staff-green); color: #fff; border-radius: 11px;
+        font-size: 1.3rem; font-weight: 800;
+      }
+      .staff-brand span:last-child { display: grid; gap: 2px; }
+      .staff-brand small, .eyebrow { color: var(--staff-green); font: 500 .68rem 'DM Mono', monospace; letter-spacing: .08em; }
+      .staff-brand strong { font-size: 1rem; }
+      .staff-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 22px; }
+      .staff-nav a { color: var(--staff-muted); font-size: .86rem; font-weight: 700; text-decoration: none; }
+      .staff-nav a:hover, .staff-nav a:focus-visible { color: var(--staff-green); }
+      .staff-nav a:focus-visible { outline: 2px solid var(--staff-green); outline-offset: 4px; }
+      .header-status { display: flex; align-items: center; gap: 9px; color: var(--staff-muted); font-size: .84rem; }
+      .header-status span { width: 8px; height: 8px; border-radius: 50%; background: #45a77e; }
+      .staff-main { width: min(1240px, calc(100% - 48px)); margin: 0 auto; padding: 48px 0 72px; }
+      .workspace-intro { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+      .workspace-intro .eyebrow { margin: 0 0 10px; }
+      .workspace-intro h2 { margin: 0; font-size: 2rem; letter-spacing: 0; line-height: 1.2; }
+      .workspace-intro p:not(.eyebrow) { margin: 8px 0 0; color: var(--staff-muted); }
+      .month-control { display: grid; gap: 7px; min-width: 190px; }
+      .month-control label, .visit-entry label { font-size: .82rem; font-weight: 700; }
+      .visit-entry label { color: var(--staff-green-dark); font-size: .84rem; }
+      input, textarea { width: 100%; color: var(--staff-ink); background: #fff; border: 1px solid var(--staff-line); border-radius: 6px; font: inherit; }
+      select { width: 100%; min-height: 44px; padding: 9px 12px; color: var(--staff-ink); background: #fff; border: 1px solid var(--staff-line); border-radius: 6px; font: inherit; }
+      input { min-height: 44px; padding: 9px 12px; }
+      textarea { min-height: 100px; padding: 11px 12px; resize: vertical; }
+      input:focus, select:focus, textarea:focus { outline: 3px solid rgba(27, 114, 87, .14); border-color: var(--staff-green); }
+      .register-layout { display: grid; grid-template-columns: minmax(270px, 340px) minmax(0, 1fr); gap: 22px; align-items: start; }
+      .visit-entry, .visit-register { background: #fff; border: 1px solid var(--staff-line); border-radius: 8px; }
+      .visit-entry { padding: 24px; display: grid; gap: 9px; }
+      .section-heading { display: flex; align-items: flex-start; gap: 12px; }
+      .section-index { flex: 0 0 32px; height: 32px; display: grid; place-items: center; border-radius: 6px; color: var(--staff-green); background: #eaf4ef; font: 500 .74rem 'DM Mono', monospace; }
+      .section-heading h3 { margin: 2px 0 0; font-size: 1.05rem; }
+      .section-heading p { margin: 5px 0 0; color: var(--staff-muted); font-size: .82rem; line-height: 1.45; }
+      .visit-entry .section-heading { margin-bottom: 12px; }
+      .primary-btn, .secondary-btn { min-height: 42px; padding: 10px 14px; border: 0; border-radius: 6px; font: 700 .88rem 'DM Sans', sans-serif; cursor: pointer; }
+      .primary-btn { background: var(--staff-green); color: #fff; }
+      .primary-btn:hover { background: var(--staff-green-dark); }
+      .record-button { margin-top: 7px; }
+      .record-button span { font-size: 1.1rem; margin-right: 5px; }
+      .storage-note, .register-footnote { margin: 3px 0 0; color: var(--staff-muted); font-size: .75rem; }
+      .visit-register { min-width: 0; padding: 24px; }
+      .register-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+      .secondary-btn { background: #fff; color: var(--staff-green-dark); border: 1px solid #b9d3c8; }
+      .secondary-btn:hover { background: #f0f7f3; }
+      .pdf-button { white-space: nowrap; }
+      .pdf-button span { margin-right: 7px; color: var(--staff-coral); font-size: 1rem; }
+      .report-downloads { display: flex; gap: 8px; }
+      .register-summary { display: flex; align-items: baseline; gap: 9px; margin: 25px 0 12px; padding-bottom: 15px; border-bottom: 1px solid var(--staff-line); }
+      .register-summary strong { font-size: 1.8rem; line-height: 1; }
+      .register-summary span { color: var(--staff-muted); font-size: .85rem; }
+      .visit-table-wrap { overflow-x: auto; }
+      .visit-table { width: 100%; border-collapse: collapse; text-align: left; }
+      .visit-table th { padding: 11px 12px; color: var(--staff-muted); background: #f5f8f6; font: 500 .7rem 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .04em; }
+      .visit-table td { padding: 13px 12px; border-bottom: 1px solid #e8eeea; font-size: .86rem; vertical-align: top; }
+      .visit-table td:first-child { white-space: nowrap; }
+      .visit-table th:last-child, .visit-table td:last-child { width: 54px; text-align: right; }
+      .remove-visit { width: 30px; height: 30px; border: 0; border-radius: 5px; background: transparent; color: var(--staff-muted); font-size: 1.2rem; cursor: pointer; }
+      .remove-visit:hover { background: #fff1ec; color: #a94e38; }
+      .empty-state { min-height: 190px; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: var(--staff-muted); }
+      .empty-state[hidden] { display: none; }
+      .empty-state > span { margin-bottom: 7px; color: var(--staff-coral); font: 500 1.5rem 'DM Mono', monospace; }
+      .empty-state strong { color: var(--staff-ink); font-size: .92rem; }
+      .empty-state p { margin: 5px 0 0; font-size: .8rem; }
+      .register-footnote { margin-top: 15px; }
+      .treatment-board { margin-top: 24px; padding: 24px; background: #fff; border: 1px solid var(--staff-line); border-radius: 8px; }
+      .treatment-board h3 { margin: 0; font-size: 1.05rem; }
+      .treatment-board > p { margin: 5px 0 18px; color: var(--staff-muted); font-size: .82rem; }
+      .treatment-form { display: grid; gap: 14px; padding-bottom: 20px; border-bottom: 1px solid var(--staff-line); }
+      .treatment-form label { display: grid; gap: 7px; color: var(--staff-green-dark); font-size: .84rem; font-weight: 700; }
+      .treatment-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      .treatment-grid .wide-field { grid-column: span 2; }
+      .treatment-form textarea { min-height: 44px; }
+      .treatment-list { margin-top: 18px; }
+      .treatment-empty { padding: 20px 0; color: var(--staff-muted); font-size: .85rem; text-align: center; }
+      .history-board { margin-top: 24px; padding: 24px; background: #fff; border: 1px solid var(--staff-line); border-radius: 8px; }
+      .history-heading { margin-bottom: 16px; }
+      .history-heading h3 { margin: 0; font-size: 1.05rem; }
+      .history-heading p { margin: 5px 0 0; color: var(--staff-muted); font-size: .82rem; }
+      .history-list { display: grid; }
+      .history-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 0; border-top: 1px solid var(--staff-line); }
+      .history-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      .history-month { display: grid; gap: 4px; }
+      .history-month strong { font-size: .9rem; }
+      .history-month span { color: var(--staff-muted); font-size: .78rem; }
+      .history-download { white-space: nowrap; }
+      .history-subheading { margin: 24px 0 0; padding-top: 18px; border-top: 1px solid var(--staff-line); font-size: .95rem; }
+      .treatment-list .visit-table { min-width: 700px; }
+      .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+      .print-report { display: none; }
+      @media (max-width: 760px) {
+        .staff-header { min-height: 68px; padding: 10px 20px; flex-wrap: wrap; }
+        .staff-nav { order: 3; flex: 1 0 100%; justify-content: flex-start; gap: 12px 20px; padding: 7px 0 3px; }
+        .staff-nav a { font-size: .8rem; }
+        .staff-main { width: min(100% - 32px, 600px); padding: 34px 0 48px; }
+        .workspace-intro { align-items: flex-start; flex-direction: column; margin-bottom: 22px; }
+        .month-control { width: 100%; }
+        .register-layout { grid-template-columns: 1fr; }
+        .visit-entry, .visit-register { padding: 19px; }
+        .treatment-board { padding: 19px; }
+        .treatment-grid { grid-template-columns: 1fr 1fr; }
+        .treatment-grid .wide-field { grid-column: span 2; }
+        .register-heading { align-items: flex-start; flex-direction: column; }
+        .report-downloads { width: 100%; flex-direction: column; }
+        .pdf-button { width: 100%; }
+        .history-board { padding: 19px; }
+        .history-row { align-items: flex-start; }
+        .history-row { flex-direction: column; }
+        .history-actions { width: 100%; }
+        .history-actions .history-download { flex: 1 1 130px; }
+        .visit-table { min-width: 540px; }
+        .header-status { font-size: .75rem; }
+      }
+      @media print {
+        @page { size: A4 portrait; margin: 18mm; }
+        body { background: #fff !important; color: #17231e !important; }
+        .staff-header, .workspace-intro, .register-layout, .treatment-board, .history-board, .page-shell { display: none !important; }
+        .staff-main { width: 100%; margin: 0; padding: 0; }
+        .print-report { display: block; }
+        .print-report .eyebrow { color: #1b7257; }
+        .print-report h1 { margin: 8px 0; font-size: 23pt; }
+        .print-report > p { margin: 5px 0; }
+        .print-table { margin-top: 22px; }
+        .print-table th { color: #253c33; background: #edf3ef !important; print-color-adjust: exact; }
+        .print-table td, .print-table th { padding: 9px 8px; border: 1px solid #d7dfda; font-size: 10pt; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="staff-app">
+      <header class="staff-header">
+        <a class="staff-brand" href="#visits" aria-label="Imani Laboratory visit register">
+          <span class="staff-brand-mark" aria-hidden="true">I</span>
+          <span><small>IMANI LABORATORY</small><strong>Visit register</strong></span>
+        </a>
+        <nav class="staff-nav" aria-label="Page sections">
+          <a href="#visitForm">Record a visit</a>
+          <a href="#monthlyRegister">Monthly register</a>
+          <a href="#treatmentPlans">Treatment plan</a>
+          <a href="#registerHistory">History</a>
+        </nav>
+        <div class="header-status"><span></span> Staff workspace</div>
+      </header>
+
+      <main class="staff-main" id="visits">
+        <section class="workspace-intro">
+          <div>
+            <p class="eyebrow accent">Patient services / Records</p>
+            <h2>Patient visits</h2>
+            <p>Record each visit and prepare a monthly register for your records.</p>
+          </div>
+          <div class="month-control">
+            <label for="reportMonth">Report month</label>
+            <input id="reportMonth" type="month" />
+          </div>
+        </section>
+
+        <section class="register-layout" aria-label="Patient visit register">
+          <form class="visit-entry" id="visitForm">
+            <div class="section-heading">
+              <span class="section-index">01</span>
+              <div><h3>Record a visit</h3><p>Enter the details from today's patient encounter.</p></div>
+            </div>
+            <label for="visitDate">Date</label>
+            <input id="visitDate" name="date" type="date" required />
+            <label for="visitBranch">Branch</label>
+            <select id="visitBranch" name="branch" required>
+              <option value="" disabled selected>Choose a branch</option>
+              <option value="Ruai">Ruai</option>
+              <option value="Joska">Joska</option>
+            </select>
+            <label for="patientName">Patient name</label>
+            <input id="patientName" name="name" type="text" placeholder="Full name" autocomplete="name" required />
+            <label for="patientAge">Age</label>
+            <input id="patientAge" name="age" type="number" min="0" max="130" step="1" placeholder="Age" required />
+            <label for="patientPhone">Phone number</label>
+            <input id="patientPhone" name="phone" type="tel" placeholder="Phone number" autocomplete="tel" required />
+            <label for="investigationDone">Investigation done</label>
+            <textarea id="investigationDone" name="investigationDone" rows="3" placeholder="Investigation done" required></textarea>
+            <label for="amountPaid">Amount paid</label>
+            <input id="amountPaid" name="amountPaid" type="number" min="0" step="0.01" placeholder="Amount paid" required />
+            <button class="primary-btn record-button" type="submit"><span aria-hidden="true">+</span> Save visit</button>
+            <p class="storage-note">Records are saved in this browser on this device.</p>
+          </form>
+
+          <section class="visit-register" id="monthlyRegister" aria-label="Monthly patient visit report">
+            <div class="register-heading">
+              <div class="section-heading">
+                <span class="section-index">02</span>
+                <div><h3>Monthly register</h3><p id="monthCaption">Visits recorded this month</p></div>
+              </div>
+            </div>
+            <div class="register-summary"><strong id="visitCount">0</strong><span>visits this month</span></div>
+            <div class="visit-table-wrap">
+              <table class="visit-table">
+                <thead><tr><th>Date</th><th>Branch</th><th>Patient name</th><th>Age</th><th>Phone number</th><th>Investigation done</th><th>Amount paid</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                <tbody id="visitRows"></tbody>
+              </table>
+              <div class="empty-state" id="emptyState"><span aria-hidden="true">—</span><strong>No visits recorded</strong><p>Visits for the selected month will appear here.</p></div>
+            </div>
+            <p class="register-footnote">Showing visits for the selected month only.</p>
+          </section>
+        </section>
+
+        <section class="treatment-board" id="treatmentPlans" aria-labelledby="treatmentHeading">
+          <h3 id="treatmentHeading">Treatment plan</h3>
+          <p>Record patient branch, condition, and planned care.</p>
+          <form class="treatment-form" id="treatmentPlanForm">
+            <div class="treatment-grid">
+              <label for="treatmentBranch">Branch<select id="treatmentBranch" required><option value="" disabled selected>Choose a branch</option><option value="Ruai">Ruai</option><option value="Joska">Joska</option></select></label>
+              <label for="treatmentPatientName">Patient Name<input id="treatmentPatientName" type="text" maxlength="180" required /></label>
+              <label for="treatmentPatientAge">Age<input id="treatmentPatientAge" type="number" min="0" max="130" step="1" required /></label>
+              <label for="treatmentAmount">Amount<input id="treatmentAmount" type="number" min="0" step="0.01" required /></label>
+              <label for="treatmentCondition">Condition<input id="treatmentCondition" type="text" maxlength="240" required /></label>
+              <label class="wide-field" for="treatmentDetails">Treatment Plan<textarea id="treatmentDetails" rows="2" maxlength="2000" required></textarea></label>
+            </div>
+            <button class="primary-btn" type="submit">Save treatment plan</button>
+          </form>
+          <div class="visit-table-wrap treatment-list">
+            <table class="visit-table">
+              <thead><tr><th>Branch</th><th>Patient Name</th><th>Age</th><th>Condition</th><th>Treatment Plan</th><th>Amount</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+              <tbody id="treatmentPlanRows"></tbody>
+            </table>
+            <div class="treatment-empty" id="treatmentPlanEmpty">No treatment plans recorded.</div>
+          </div>
+        </section>
+
+        <section class="print-report" id="printReport" aria-hidden="true">
+          <p class="eyebrow">Imani Laboratory</p>
+          <h1>Monthly Patient Visit Report</h1>
+          <p id="printMonth"></p>
+          <p id="printBranch"></p>
+          <p id="printTotal"></p>
+          <table class="visit-table print-table">
+            <thead><tr><th>Date</th><th>Branch</th><th>Patient name</th><th>Age</th><th>Phone number</th><th>Investigation done</th><th>Amount paid</th></tr></thead>
+            <tbody id="printRows"></tbody>
+          </table>
+        </section>
+
+        <section class="history-board" id="registerHistory" aria-labelledby="historyHeading">
+          <div class="history-heading">
+            <h3 id="historyHeading">History</h3>
+            <p>Download one of the latest three monthly registers.</p>
+          </div>
+          <div class="history-list" id="historyList" aria-live="polite"></div>
+          <h4 class="history-subheading">Treatment plans</h4>
+          <div class="history-list" id="treatmentHistoryList" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-mark">I</div>
+          <div>
+            <p class="eyebrow">Imani Laboratory</p>
+            <h1>Imani Laboratory</h1>
+          </div>
+        </div>
+
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="#overview">Overview</a>
+          <a href="#treatments">Treatments</a>
+          <a href="#visits">Visits</a>
+          <a href="#admin">Admin</a>
+        </nav>
+
+        <button class="primary-btn">Book a Visit</button>
+      </header>
+
+      <main>
+        <section class="hero" id="overview">
+          <div class="hero-copy">
+            <p class="eyebrow accent">Two trusted branches, one patient-first experience</p>
+            <h2>Compassionate care, specialist treatment, and fast communication.</h2>
+            <p class="hero-text">
+              Imani Laboratory brings together the Ruai and Joska branches to deliver trusted hospital services,
+              modern diagnostics, wellness education, and patient-centered communication that keeps families informed.
+            </p>
+
+            <div class="hero-actions">
+              <button class="primary-btn">Request an appointment</button>
+              <button class="secondary-btn">Emergency notices</button>
+            </div>
+
+            <div class="mini-metrics">
+              <div class="mini-card">
+                <strong>2</strong>
+                <span>Active branches</span>
+              </div>
+              <div class="mini-card">
+                <strong>14</strong>
+                <span>Specialist units</span>
+              </div>
+              <div class="mini-card">
+                <strong>24/7</strong>
+                <span>Emergency support</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="hero-panel" aria-label="Branch summary">
+            <div class="panel-header">
+              <span class="signal-dot"></span>
+              <span>Branch snapshot</span>
+            </div>
+
+            <div class="branch-overview">
+              <div class="branch-box">
+                <span class="branch-name">Ruai Branch</span>
+                <strong>General medicine</strong>
+                <small>Open daily • 7:00 AM – 8:00 PM</small>
+              </div>
+              <div class="branch-box highlight">
+                <span class="branch-name">Joska Branch</span>
+                <strong>Specialist care</strong>
+                <small>Urgent response • 24/7 support</small>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="branch-detail-grid" aria-label="Branch details">
+          <article class="branch-detail-card">
+            <div class="detail-tag">Ruai Branch</div>
+            <h3>Primary outpatient care</h3>
+            <p>General consultations, maternal care, pharmacy support, and family medicine services.</p>
+            <ul>
+              <li>Monday–Saturday: 7:00 AM – 8:00 PM</li>
+              <li>Family clinic and routine diagnostics</li>
+              <li>Referrals coordinated with Joska</li>
+            </ul>
+          </article>
+
+          <article class="branch-detail-card accent-card">
+            <div class="detail-tag">Joska Branch</div>
+            <h3>Specialist and emergency care</h3>
+            <p>Urgent treatment, cardiology review, emergency support, and advanced diagnostic triage.</p>
+            <ul>
+              <li>Open 24/7 for emergency cases</li>
+              <li>Cardiac and trauma specialist review</li>
+              <li>Rapid dispatch to supporting departments</li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="confirmation-banner" aria-label="Appointment confirmation">
+          <div>
+            <p class="eyebrow accent">Appointment status</p>
+            <h3>Confirmation email sent after booking</h3>
+          </div>
+          <p>Patients can request, reschedule, or cancel appointments online, and all updates are sent directly by email.</p>
+        </section>
+
+        <section class="stat-row" aria-label="Key hospital stats">
+          <article class="stat-card">
+            <span>Departments</span>
+            <strong>09</strong>
+            <small>Core clinical teams</small>
+          </article>
+          <article class="stat-card">
+            <span>Patients served</span>
+            <strong>3,420</strong>
+            <small>Last 6 months</small>
+          </article>
+          <article class="stat-card">
+            <span>Medicine stock</span>
+            <strong>92%</strong>
+            <small>Well maintained</small>
+          </article>
+          <article class="stat-card">
+            <span>Patient rating</span>
+            <strong>4.9/5</strong>
+            <small>Across both branches</small>
+          </article>
+        </section>
+
+        <section class="content-grid" id="treatments">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow accent">Available treatments</p>
+              <h3>Departments and specialized care units</h3>
+            </div>
+          </div>
+
+          <div class="info-grid three-up">
+            <article class="feature-card">
+              <div class="icon-badge">+</div>
+              <h4>General Medicine</h4>
+              <p>Routine consultations, chronic disease management, and follow-up care for adults and children.</p>
+            </article>
+            <article class="feature-card">
+              <div class="icon-badge">&#10003;</div>
+              <h4>Maternal & Child Care</h4>
+              <p>Safe prenatal monitoring, pediatric consultations, and coordinated family wellness support.</p>
+            </article>
+            <article class="feature-card">
+              <div class="icon-badge">◎</div>
+              <h4>Diagnostics</h4>
+              <p>Laboratory testing, imaging referrals, pathology review, and result coordination across branches.</p>
+            </article>
+            <article class="feature-card">
+              <div class="icon-badge">♥</div>
+              <h4>Cardiology</h4>
+              <p>Heart evaluations, blood pressure monitoring, and referral pathways for high-risk patients.</p>
+            </article>
+            <article class="feature-card">
+              <div class="icon-badge">✚</div>
+              <h4>Emergency Care</h4>
+              <p>Rapid triage, urgent intervention, and branch-to-branch communication during critical incidents.</p>
+            </article>
+            <article class="feature-card">
+              <div class="icon-badge">⚕</div>
+              <h4>Pharmacy & Therapy</h4>
+              <p>Medication review, refill coordination, and treatment-planning support for sustained recovery.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="bottom-grid notices-grid">
+          <div class="info-panel" id="updates">
+            <div class="section-header small-gap">
+              <div>
+                <p class="eyebrow accent">Latest notices</p>
+                <h3>Emergency and policy updates</h3>
+              </div>
+            </div>
+
+            <div class="update-list">
+              <div class="update-item">
+                <span class="bullet"></span>
+                <div>
+                  <strong>Weather advisory</strong>
+                  <p>Ruai branch visiting hours are adjusted due to heavy rain and poor road conditions.</p>
+                </div>
+              </div>
+              <div class="update-item">
+                <span class="bullet"></span>
+                <div>
+                  <strong>Visiting policy update</strong>
+                  <p>Visitors are required to register at reception and may be limited during peak clinical hours.</p>
+                </div>
+              </div>
+              <div class="update-item">
+                <span class="bullet"></span>
+                <div>
+                  <strong>Emergency notice</strong>
+                  <p>Joska emergency unit remains active for trauma, pediatric urgent care, and same-day assessment.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-panel booking-panel" id="visits">
+            <div class="section-header small-gap">
+              <div>
+                <p class="eyebrow accent">Book a visit</p>
+                <h3>Schedule or change an appointment</h3>
+              </div>
+            </div>
+
+            <form class="visit-form">
+              <div class="field-row">
+                <label>
+                  Full name
+                  <input type="text" placeholder="Your full name" />
+                </label>
+                <label>
+                  Email address
+                  <input type="email" placeholder="name@example.com" />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>
+                  Preferred branch
+                  <select>
+                    <option>Ruai Branch</option>
+                    <option>Joska Branch</option>
+                  </select>
+                </label>
+                <label>
+                  Preferred date
+                  <input type="date" />
+                </label>
+              </div>
+
+              <label>
+                Treatment or specialty
+                <select>
+                  <option>General consultation</option>
+                  <option>Cardiology</option>
+                  <option>Laboratory test</option>
+                  <option>Maternal care</option>
+                  <option>Emergency review</option>
+                </select>
+              </label>
+
+              <label>
+                Notes or request
+                <textarea rows="4" placeholder="Share your visit change request, preferred time, or reason for booking."></textarea>
+              </label>
+
+              <div class="form-footer">
+                <small>Appointments, changes, and confirmations are sent by email.</small>
+                <button type="submit" class="primary-btn form-btn">Send request</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="admin-panel" id="admin">
+          <div class="section-header admin-header">
+            <div>
+              <p class="eyebrow accent">Admin only</p>
+              <h3>Monthly reports and inventory overview</h3>
+            </div>
+            <span class="admin-badge">Private access</span>
+          </div>
+
+          <div class="admin-login-box">
+            <div class="admin-login-field">
+              <label>
+                Username
+                <input id="adminUsername" type="text" placeholder="Web" />
+              </label>
+            </div>
+            <div class="admin-login-field">
+              <label>
+                Password
+                <input id="adminPassword" type="password" placeholder="Enter password" />
+              </label>
+            </div>
+            <button type="button" class="primary-btn admin-login-btn" id="adminLoginBtn">Access Reports</button>
+          </div>
+
+          <div class="admin-content-manager hidden" id="adminContentManager">
+            <div class="content-manager-header">
+              <h4>Article and blog manager</h4>
+              <span>Admin updates</span>
+            </div>
+
+            <div class="manager-actions">
+              <button type="button" class="primary-btn" id="newArticleBtn">New article</button>
+            </div>
+
+            <form id="articleForm" class="article-form hidden">
+              <input type="hidden" id="articleIndex" value="" />
+
+              <div class="field-row">
+                <label>
+                  Category
+                  <select id="articleCategory">
+                    <option value="Wellness">Wellness</option>
+                    <option value="Guide">Guide</option>
+                    <option value="News">News</option>
+                    <option value="Blog">Blog</option>
+                  </select>
+                </label>
+                <label>
+                  Link text
+                  <input id="articleLink" type="text" placeholder="Read article" />
+                </label>
+              </div>
+
+              <label>
+                Title
+                <input id="articleTitle" type="text" placeholder="Article or blog title" required />
+              </label>
+
+              <label>
+                Summary
+                <textarea id="articleSummary" rows="4" placeholder="Write the article summary here..." required></textarea>
+              </label>
+
+              <div class="form-footer">
+                <button type="submit" class="primary-btn">Save content</button>
+                <button type="button" id="resetArticleBtn" class="secondary-btn">Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="admin-workspace hidden" id="adminWorkspace">
+            <div class="workspace-section">
+              <div class="content-manager-header">
+                <div>
+                  <h4>Daily appointment register</h4>
+                  <span id="appointmentDateLabel">Today</span>
+                </div>
+                <span id="appointmentCount">0 appointments</span>
+              </div>
+
+              <form id="appointmentForm" class="article-form">
+                <div class="field-row">
+                  <label>
+                    Patient name
+                    <input id="appointmentPatient" type="text" placeholder="Patient full name" required />
+                  </label>
+                  <label>
+                    Appointment time
+                    <input id="appointmentTime" type="time" required />
+                  </label>
+                </div>
+
+                <div class="field-row">
+                  <label>
+                    Branch
+                    <select id="appointmentBranch">
+                      <option>Ruai Branch</option>
+                      <option>Joska Branch</option>
+                    </select>
+                  </label>
+                  <label>
+                    Department
+                    <select id="appointmentDepartment">
+                      <option>General Medicine</option>
+                      <option>Diagnostics</option>
+                      <option>Maternal & Child Care</option>
+                      <option>Cardiology</option>
+                      <option>Emergency Care</option>
+                      <option>Pharmacy & Therapy</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div class="form-footer">
+                  <small>Appointments are stored on this device for staff review.</small>
+                  <button type="submit" class="primary-btn">Record appointment</button>
+                </div>
+              </form>
+
+              <div class="data-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr><th>Patient</th><th>Time</th><th>Branch</th><th>Department</th><th>Status</th><th></th></tr>
+                  </thead>
+                  <tbody id="appointmentRows"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="workspace-section">
+              <div class="content-manager-header">
+                <div>
+                  <h4>Medicine inventory</h4>
+                  <span>Check stock and reorder levels</span>
+                </div>
+                <span id="inventoryStatus">0 items</span>
+              </div>
+
+              <form id="inventoryForm" class="article-form">
+                <input type="hidden" id="inventoryIndex" value="" />
+                <div class="field-row">
+                  <label>
+                    Medicine
+                    <input id="inventoryName" type="text" placeholder="Medicine name" required />
+                  </label>
+                  <label>
+                    Branch
+                    <select id="inventoryBranch">
+                      <option>Ruai Branch</option>
+                      <option>Joska Branch</option>
+                      <option>Both branches</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="field-row">
+                  <label>
+                    Quantity in stock
+                    <input id="inventoryQuantity" type="number" min="0" required />
+                  </label>
+                  <label>
+                    Reorder level
+                    <input id="inventoryReorder" type="number" min="0" required />
+                  </label>
+                </div>
+                <div class="form-footer">
+                  <small>Edit an existing row or add a new medicine record.</small>
+                  <div class="button-row">
+                    <button type="submit" class="primary-btn" id="inventorySaveBtn">Save inventory</button>
+                    <button type="button" class="secondary-btn" id="inventoryResetBtn">Clear</button>
+                  </div>
+                </div>
+              </form>
+
+              <div class="data-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr><th>Medicine</th><th>Branch</th><th>Stock</th><th>Reorder at</th><th>Status</th><th></th></tr>
+                  </thead>
+                  <tbody id="inventoryRows"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-grid">
+            <article class="admin-card highlight-admin">
+              <span>Monthly patient visits</span>
+              <strong>1,248</strong>
+              <small>+12.6% vs last month</small>
+            </article>
+            <article class="admin-card">
+              <span>Medicine inventory</span>
+              <strong>92.4%</strong>
+              <small>Stock availability</small>
+            </article>
+            <article class="admin-card">
+              <span>Emergency cases</span>
+              <strong>83</strong>
+              <small>Across both branches</small>
+            </article>
+            <article class="admin-card">
+              <span>Follow-up compliance</span>
+              <strong>88%</strong>
+              <small>Department average</small>
+            </article>
+          </div>
+
+          <div class="report-summary">
+            <div>
+              <h4>End-of-month summary</h4>
+              <ul>
+                <li>Most active department: General medicine</li>
+                <li>High-demand medicine: Antihypertensives</li>
+                <li>Inventory review: Reorder list ready for procurement</li>
+              </ul>
+            </div>
+            <button type="button" class="secondary-btn" id="generateReportBtn">Generate report</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal hidden" id="articleModal" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Update article</h3>
+          <button type="button" class="modal-close" id="closeArticleModalBtn" aria-label="Close">×</button>
+        </div>
+
+        <form id="articleFormModal" class="article-form">
+          <input type="hidden" id="articleIndexModal" value="" />
+
+          <div class="field-row">
+            <label>
+              Category
+              <select id="articleCategoryModal">
+                <option value="Wellness">Wellness</option>
+                <option value="Guide">Guide</option>
+                <option value="News">News</option>
+                <option value="Blog">Blog</option>
+              </select>
+            </label>
+            <label>
+              Link text
+              <input id="articleLinkModal" type="text" placeholder="Read article" />
+            </label>
+          </div>
+
+          <label>
+            Title
+            <input id="articleTitleModal" type="text" placeholder="Article or blog title" required />
+          </label>
+
+          <label>
+            Summary
+            <textarea id="articleSummaryModal" rows="4" placeholder="Write the article summary here..." required></textarea>
+          </label>
+
+          <div class="form-footer">
+            <button type="submit" class="primary-btn">Save content</button>
+            <button type="button" id="cancelArticleModalBtn" class="secondary-btn">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const articleStorageKey = 'imani-lab-articles';
+      const appointmentStorageKey = 'imani-lab-appointments';
+      const inventoryStorageKey = 'imani-lab-inventory';
+      const adminUser = 'Web';
+      const adminPasswordHash = '2a7a16b13ed250db84d215a711c56cc63651184d6e90e31ce68c85447f6c474e';
+
+      const defaultArticles = [
+        {
+          category: 'Wellness',
+          title: 'Five ways to improve heart health in everyday life',
+          summary: 'Simple habits, nutrition tips, and stress reduction ideas that help patients stay healthier at home.',
+          link: 'Read article'
+        },
+        {
+          category: 'Guide',
+          title: 'What to expect before and after a diagnostic test',
+          summary: 'Learn how to prepare, what symptoms to watch, and how results are shared across departments.',
+          link: 'View guide'
+        },
+        {
+          category: 'News',
+          title: 'New family care resources now available at both branches',
+          summary: 'We have introduced more support tools for maternal health, child wellness, and routine follow-up care.',
+          link: 'Read update'
+        }
+      ];
+
+      const articleList = document.getElementById('articleList');
+      const blogGrid = document.getElementById('blogGrid');
+      const adminContentManager = document.getElementById('adminContentManager');
+      const adminWorkspace = document.getElementById('adminWorkspace');
+      const articleForm = document.getElementById('articleForm');
+      const articleFormModal = document.getElementById('articleFormModal');
+      const articleModal = document.getElementById('articleModal');
+      const articleIndexInput = document.getElementById('articleIndex');
+      const articleCategoryInput = document.getElementById('articleCategory');
+      const articleTitleInput = document.getElementById('articleTitle');
+      const articleSummaryInput = document.getElementById('articleSummary');
+      const articleLinkInput = document.getElementById('articleLink');
+      const articleIndexModal = document.getElementById('articleIndexModal');
+      const articleCategoryModal = document.getElementById('articleCategoryModal');
+      const articleTitleModal = document.getElementById('articleTitleModal');
+      const articleSummaryModal = document.getElementById('articleSummaryModal');
+      const articleLinkModal = document.getElementById('articleLinkModal');
+      const newArticleBtn = document.getElementById('newArticleBtn');
+      const resetArticleBtn = document.getElementById('resetArticleBtn');
+      const adminLoginBtn = document.getElementById('adminLoginBtn');
+      const closeArticleModalBtn = document.getElementById('closeArticleModalBtn');
+      const cancelArticleModalBtn = document.getElementById('cancelArticleModalBtn');
+      const appointmentForm = document.getElementById('appointmentForm');
+      const appointmentRows = document.getElementById('appointmentRows');
+      const appointmentCount = document.getElementById('appointmentCount');
+      const appointmentDateLabel = document.getElementById('appointmentDateLabel');
+      const inventoryForm = document.getElementById('inventoryForm');
+      const inventoryRows = document.getElementById('inventoryRows');
+      const inventoryStatus = document.getElementById('inventoryStatus');
+      const inventoryResetBtn = document.getElementById('inventoryResetBtn');
+      const generateReportBtn = document.getElementById('generateReportBtn');
+
+      const defaultInventory = [
+        { name: 'Amoxicillin 500mg', branch: 'Ruai Branch', quantity: 84, reorder: 30 },
+        { name: 'Paracetamol 500mg', branch: 'Both branches', quantity: 210, reorder: 60 },
+        { name: 'Amlodipine 10mg', branch: 'Joska Branch', quantity: 24, reorder: 25 }
+      ];
+
+      function readStoredList(key, fallback) {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(key));
+          return Array.isArray(parsed) ? parsed : [...fallback];
+        } catch {
+          return [...fallback];
+        }
+      }
+
+      function getAppointments() {
+        return readStoredList(appointmentStorageKey, []);
+      }
+
+      function getInventory() {
+        const saved = localStorage.getItem(inventoryStorageKey);
+        if (!saved) {
+          localStorage.setItem(inventoryStorageKey, JSON.stringify(defaultInventory));
+          return [...defaultInventory];
+        }
+        return readStoredList(inventoryStorageKey, defaultInventory);
+      }
+
+      function renderAppointments() {
+        const appointments = getAppointments();
+        appointmentRows.innerHTML = '';
+        appointmentCount.textContent = `${appointments.length} appointment${appointments.length === 1 ? '' : 's'}`;
+        appointmentDateLabel.textContent = new Date().toLocaleDateString(undefined, { dateStyle: 'medium' });
+
+        appointments.forEach((appointment, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${appointment.patient}</td>
+            <td>${appointment.time}</td>
+            <td>${appointment.branch}</td>
+            <td>${appointment.department}</td>
+            <td><span class="status-pill">${appointment.status}</span></td>
+            <td><button type="button" class="table-action" data-remove-appointment="${index}">Remove</button></td>
+          `;
+          row.querySelector('[data-remove-appointment]').addEventListener('click', () => {
+            appointments.splice(index, 1);
+            localStorage.setItem(appointmentStorageKey, JSON.stringify(appointments));
+            renderAppointments();
+          });
+          appointmentRows.appendChild(row);
+        });
+      }
+
+      function renderInventory() {
+        const inventory = getInventory();
+        inventoryRows.innerHTML = '';
+        inventoryStatus.textContent = `${inventory.length} item${inventory.length === 1 ? '' : 's'}`;
+
+        inventory.forEach((item, index) => {
+          const lowStock = Number(item.quantity) <= Number(item.reorder);
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.branch}</td>
+            <td>${item.quantity}</td>
+            <td>${item.reorder}</td>
+            <td><span class="status-pill ${lowStock ? 'status-low' : ''}">${lowStock ? 'Reorder' : 'In stock'}</span></td>
+            <td><button type="button" class="table-action" data-edit-inventory="${index}">Edit</button></td>
+          `;
+          row.querySelector('[data-edit-inventory]').addEventListener('click', () => {
+            document.getElementById('inventoryIndex').value = index;
+            document.getElementById('inventoryName').value = item.name;
+            document.getElementById('inventoryBranch').value = item.branch;
+            document.getElementById('inventoryQuantity').value = item.quantity;
+            document.getElementById('inventoryReorder').value = item.reorder;
+            document.getElementById('inventoryName').focus();
+          });
+          inventoryRows.appendChild(row);
+        });
+      }
+
+      function buildReport() {
+        const appointments = getAppointments();
+        const inventory = getInventory();
+        const lowStock = inventory.filter((item) => Number(item.quantity) <= Number(item.reorder));
+        const appointmentLines = appointments.length
+          ? appointments.map((item) => `- ${item.patient}, ${item.time}, ${item.branch}, ${item.department}`).join('\n')
+          : '- No appointments recorded';
+        const inventoryLines = inventory.length
+          ? inventory.map((item) => `- ${item.name}: ${item.quantity} in stock at ${item.branch} (reorder at ${item.reorder})`).join('\n')
+          : '- No inventory recorded';
+
+        return `IMANI LABORATORY MONTHLY REPORT\nDate: ${new Date().toLocaleDateString()}\n\nAPPOINTMENTS\n${appointmentLines}\n\nINVENTORY\n${inventoryLines}\n\nLOW STOCK ITEMS: ${lowStock.length}`;
+      }
+
+      function getArticles() {
+        const saved = localStorage.getItem(articleStorageKey);
+        if (!saved) {
+          localStorage.setItem(articleStorageKey, JSON.stringify(defaultArticles));
+          return [...defaultArticles];
+        }
+
+        try {
+          const parsed = JSON.parse(saved);
+          return Array.isArray(parsed) && parsed.length ? parsed : [...defaultArticles];
+        } catch {
+          return [...defaultArticles];
+        }
+      }
+
+      function renderArticles() {
+        if (!articleList || !blogGrid) return;
+        const articles = getArticles();
+        articleList.innerHTML = '';
+        blogGrid.innerHTML = '';
+
+        articles.forEach((article, index) => {
+          const card = document.createElement('article');
+          card.className = 'article-card';
+
+          card.innerHTML = `
+            <div class="tag">${article.category}</div>
+            <h4>${article.title}</h4>
+            <p>${article.summary}</p>
+            <div class="article-actions">
+              <a href="#">${article.link}</a>
+              <button type="button" class="secondary-btn small-btn" data-edit-index="${index}">Edit</button>
+            </div>
+          `;
+
+          const blogCard = document.createElement('article');
+          blogCard.className = 'blog-card';
+          blogCard.innerHTML = `
+            <div class="tag">${article.category}</div>
+            <h4>${article.title}</h4>
+            <p>${article.summary}</p>
+            <button type="button" class="secondary-btn small-btn" data-read-index="${index}">Read more</button>
+          `;
+
+          const editButton = card.querySelector('[data-edit-index]');
+          editButton.addEventListener('click', () => openArticleModal(index));
+
+          const readButton = blogCard.querySelector('[data-read-index]');
+          readButton.addEventListener('click', () => openArticleModal(index));
+
+          articleList.appendChild(card);
+          blogGrid.appendChild(blogCard);
+        });
+      }
+
+      function saveArticles(articles) {
+        localStorage.setItem(articleStorageKey, JSON.stringify(articles));
+        renderArticles();
+      }
+
+      function openArticleModal(index = '') {
+        const articles = getArticles();
+        const article = index === '' ? null : articles[index];
+
+        articleIndexModal.value = index === '' ? '' : String(index);
+        articleCategoryModal.value = article ? article.category : 'Wellness';
+        articleTitleModal.value = article ? article.title : '';
+        articleSummaryModal.value = article ? article.summary : '';
+        articleLinkModal.value = article ? article.link : 'Read article';
+        articleModal.classList.remove('hidden');
+      }
+
+      function closeArticleModal() {
+        articleModal.classList.add('hidden');
+        articleFormModal.reset();
+        articleIndexModal.value = '';
+      }
+
+      function loadArticleIntoForm(index) {
+        const articles = getArticles();
+        const article = articles[index];
+        if (!article) return;
+
+        articleIndexInput.value = index;
+        articleCategoryInput.value = article.category;
+        articleTitleInput.value = article.title;
+        articleSummaryInput.value = article.summary;
+        articleLinkInput.value = article.link;
+        articleForm.classList.remove('hidden');
+        articleTitleInput.focus();
+      }
+
+      async function accessAdminPanel() {
+        const username = document.getElementById('adminUsername').value.trim();
+        const password = document.getElementById('adminPassword').value.trim();
+        const passwordBytes = new TextEncoder().encode(password);
+        const passwordDigest = await crypto.subtle.digest('SHA-256', passwordBytes);
+        const passwordHash = [...new Uint8Array(passwordDigest)]
+          .map((value) => value.toString(16).padStart(2, '0'))
+          .join('');
+
+        if (username === adminUser && passwordHash === adminPasswordHash) {
+          adminContentManager.classList.remove('hidden');
+          adminWorkspace.classList.remove('hidden');
+          document.getElementById('adminUsername').value = '';
+          document.getElementById('adminPassword').value = '';
+          return;
+        }
+
+        alert('Incorrect admin login details.');
+      }
+
+      articleForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const articles = getArticles();
+        const payload = {
+          category: articleCategoryInput.value,
+          title: articleTitleInput.value.trim(),
+          summary: articleSummaryInput.value.trim(),
+          link: articleLinkInput.value.trim() || 'Read article'
+        };
+
+        if (!payload.title || !payload.summary) {
+          return;
+        }
+
+        const indexValue = articleIndexInput.value;
+
+        if (indexValue === '') {
+          articles.unshift(payload);
+        } else {
+          articles[Number(indexValue)] = payload;
+        }
+
+        articleIndexInput.value = '';
+        articleForm.reset();
+        articleCategoryInput.value = 'Wellness';
+        saveArticles(articles);
+      });
+
+      articleFormModal.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const articles = getArticles();
+        const payload = {
+          category: articleCategoryModal.value,
+          title: articleTitleModal.value.trim(),
+          summary: articleSummaryModal.value.trim(),
+          link: articleLinkModal.value.trim() || 'Read article'
+        };
+
+        if (!payload.title || !payload.summary) {
+          return;
+        }
+
+        const indexValue = articleIndexModal.value;
+
+        if (indexValue === '') {
+          articles.unshift(payload);
+        } else {
+          articles[Number(indexValue)] = payload;
+        }
+
+        closeArticleModal();
+        saveArticles(articles);
+      });
+
+      resetArticleBtn.addEventListener('click', () => {
+        articleIndexInput.value = '';
+        articleForm.reset();
+        articleCategoryInput.value = 'Wellness';
+      });
+
+      appointmentForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const appointments = getAppointments();
+        appointments.push({
+          patient: document.getElementById('appointmentPatient').value.trim(),
+          time: document.getElementById('appointmentTime').value,
+          branch: document.getElementById('appointmentBranch').value,
+          department: document.getElementById('appointmentDepartment').value,
+          status: 'Booked'
+        });
+        localStorage.setItem(appointmentStorageKey, JSON.stringify(appointments));
+        appointmentForm.reset();
+        renderAppointments();
+      });
+
+      inventoryForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const inventory = getInventory();
+        const item = {
+          name: document.getElementById('inventoryName').value.trim(),
+          branch: document.getElementById('inventoryBranch').value,
+          quantity: Number(document.getElementById('inventoryQuantity').value),
+          reorder: Number(document.getElementById('inventoryReorder').value)
+        };
+        const index = document.getElementById('inventoryIndex').value;
+        if (index === '') inventory.push(item);
+        else inventory[Number(index)] = item;
+        localStorage.setItem(inventoryStorageKey, JSON.stringify(inventory));
+        inventoryForm.reset();
+        document.getElementById('inventoryIndex').value = '';
+        renderInventory();
+      });
+
+      inventoryResetBtn.addEventListener('click', () => {
+        inventoryForm.reset();
+        document.getElementById('inventoryIndex').value = '';
+      });
+
+      generateReportBtn.addEventListener('click', () => {
+        const report = buildReport();
+        const download = document.createElement('a');
+        download.href = `data:text/plain;charset=utf-8,${encodeURIComponent(report)}`;
+        download.download = `imani-laboratory-report-${new Date().toISOString().slice(0, 10)}.txt`;
+        download.click();
+      });
+
+      newArticleBtn.addEventListener('click', () => openArticleModal(''));
+      adminLoginBtn.addEventListener('click', accessAdminPanel);
+      closeArticleModalBtn.addEventListener('click', closeArticleModal);
+      cancelArticleModalBtn.addEventListener('click', closeArticleModal);
+      renderArticles();
+      renderAppointments();
+      renderInventory();
+      adminContentManager.classList.add('hidden');
+      adminWorkspace.classList.add('hidden');
+    </script>
+    <script>
+      (() => {
+        const storageKey = 'imani-laboratory-patient-visits';
+        const treatmentStorageKey = 'imani-laboratory-treatment-plans';
+        const form = document.getElementById('visitForm');
+        const dateInput = document.getElementById('visitDate');
+        const branchInput = document.getElementById('visitBranch');
+        const nameInput = document.getElementById('patientName');
+        const ageInput = document.getElementById('patientAge');
+        const phoneInput = document.getElementById('patientPhone');
+        const investigationInput = document.getElementById('investigationDone');
+        const amountPaidInput = document.getElementById('amountPaid');
+        const treatmentForm = document.getElementById('treatmentPlanForm');
+        const treatmentBranchInput = document.getElementById('treatmentBranch');
+        const treatmentRows = document.getElementById('treatmentPlanRows');
+        const treatmentEmpty = document.getElementById('treatmentPlanEmpty');
+        const monthInput = document.getElementById('reportMonth');
+        const rows = document.getElementById('visitRows');
+        const printRows = document.getElementById('printRows');
+        const count = document.getElementById('visitCount');
+        const emptyState = document.getElementById('emptyState');
+        const monthCaption = document.getElementById('monthCaption');
+        const historyList = document.getElementById('historyList');
+        const treatmentHistoryList = document.getElementById('treatmentHistoryList');
+        function localDateValue(date = new Date()) {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        }
+
+        function readVisits() {
+          try {
+            const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            return Array.isArray(saved) ? saved : [];
+          } catch {
+            return [];
+          }
+        }
+
+        function readTreatmentPlans() {
+          try {
+            const saved = JSON.parse(localStorage.getItem(treatmentStorageKey) || '[]');
+            return Array.isArray(saved) ? saved : [];
+          } catch {
+            return [];
+          }
+        }
+
+        function formatDate(value) {
+          const [year, month, day] = value.split('-').map(Number);
+          return new Date(year, month - 1, day).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function recentMonthKeys() {
+          const now = new Date();
+          return Array.from({ length: 3 }, (_, offset) => {
+            const date = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          });
+        }
+
+        function downloadExcelReport(reportType, branch, month = '') {
+          if (!window.XLSX) {
+            window.alert('Excel export is unavailable. Check your internet connection and reload the page.');
+            return;
+          }
+
+          const isVisitReport = reportType === 'visits';
+          const records = isVisitReport
+            ? readVisits()
+              .filter((visit) => visit.branch === branch && visit.date.startsWith(month))
+              .sort((first, second) => first.date.localeCompare(second.date))
+            : readTreatmentPlans()
+              .filter((plan) => plan.branch === branch)
+              .sort((first, second) => String(first.date || '').localeCompare(String(second.date || '')));
+          const headings = isVisitReport
+            ? ['Date', 'Branch', 'Patient name', 'Age', 'Telephone number', 'Investigation done', 'Amount paid']
+            : ['Recorded date', 'Branch', 'Patient Name', 'Age', 'Condition', 'Treatment Plan', 'Amount'];
+          const excelNumber = (value) => value == null || value === '' ? '' : Number(value);
+          const dataRows = isVisitReport
+            ? records.map((visit) => [visit.date, visit.branch, visit.name, excelNumber(visit.age), visit.phone, visit.investigationDone ?? visit.testResults, excelNumber(visit.amountPaid)])
+            : records.map((plan) => [plan.date || '', plan.branch, plan.patientName, excelNumber(plan.age), plan.condition, plan.treatment, excelNumber(plan.amount)]);
+          const workbook = window.XLSX.utils.book_new();
+          const worksheet = window.XLSX.utils.aoa_to_sheet([headings, ...dataRows]);
+          window.XLSX.utils.book_append_sheet(workbook, worksheet, isVisitReport ? 'Patient visits' : 'Treatment plans');
+          const period = month ? `-${month}` : '';
+          window.XLSX.writeFile(workbook, `imani-laboratory-${reportType}-${branch.toLowerCase()}${period}.xlsx`);
+        }
+
+        function historyDownloadButton(label, ariaLabel, download) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'secondary-btn history-download';
+          button.textContent = label;
+          button.setAttribute('aria-label', ariaLabel);
+          button.addEventListener('click', download);
+          return button;
+        }
+
+        function renderHistory() {
+          const visits = readVisits();
+          historyList.replaceChildren();
+          recentMonthKeys().forEach((month) => {
+            const monthVisits = visits.filter((visit) => visit.date.startsWith(month));
+            const date = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1, 1);
+            const row = document.createElement('div');
+            row.className = 'history-row';
+            const details = document.createElement('div');
+            details.className = 'history-month';
+            const label = document.createElement('strong');
+            label.textContent = date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+            const total = document.createElement('span');
+            total.textContent = `${monthVisits.length} ${monthVisits.length === 1 ? 'visit' : 'visits'}`;
+            const actions = document.createElement('div');
+            actions.className = 'history-actions';
+            ['Ruai', 'Joska'].forEach((branch) => {
+              actions.append(historyDownloadButton(
+                `${branch} Excel`,
+                `Download ${label.textContent} ${branch} patient visits as an Excel file`,
+                () => downloadExcelReport('visits', branch, month)
+              ));
+            });
+            details.append(label, total);
+            row.append(details, actions);
+            historyList.append(row);
+          });
+
+          const plans = readTreatmentPlans();
+          treatmentHistoryList.replaceChildren();
+          const row = document.createElement('div');
+          row.className = 'history-row';
+          const details = document.createElement('div');
+          details.className = 'history-month';
+          const label = document.createElement('strong');
+          label.textContent = 'All recorded treatment plans';
+          const total = document.createElement('span');
+          const ruaiCount = plans.filter((plan) => plan.branch === 'Ruai').length;
+          const joskaCount = plans.filter((plan) => plan.branch === 'Joska').length;
+          const unassignedCount = plans.filter((plan) => !plan.branch).length;
+          total.textContent = `${plans.length} total | Ruai: ${ruaiCount} | Joska: ${joskaCount}${unassignedCount ? ` | Unassigned: ${unassignedCount}` : ''}`;
+          const actions = document.createElement('div');
+          actions.className = 'history-actions';
+          ['Ruai', 'Joska'].forEach((branch) => {
+            actions.append(historyDownloadButton(
+              `${branch} Excel`,
+              `Download ${branch} treatment plans as an Excel file`,
+              () => downloadExcelReport('treatment-plans', branch)
+            ));
+          });
+          details.append(label, total);
+          row.append(details, actions);
+          treatmentHistoryList.append(row);
+        }
+
+        function textCell(value) {
+          const cell = document.createElement('td');
+          cell.textContent = value == null ? '' : String(value);
+          return cell;
+        }
+
+        function renderTreatmentPlans() {
+          const plans = readTreatmentPlans();
+          treatmentRows.replaceChildren();
+          treatmentEmpty.hidden = plans.length > 0;
+          plans.forEach((plan, index) => {
+            const row = document.createElement('tr');
+            row.append(textCell(plan.branch || 'Unassigned'), textCell(plan.patientName), textCell(plan.age), textCell(plan.condition), textCell(plan.treatment), textCell(plan.amount));
+            const actionCell = document.createElement('td');
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-visit';
+            removeButton.textContent = '\u00d7';
+            removeButton.setAttribute('aria-label', `Remove treatment plan for ${plan.patientName}`);
+            removeButton.addEventListener('click', () => {
+              const allPlans = readTreatmentPlans();
+              allPlans.splice(index, 1);
+              localStorage.setItem(treatmentStorageKey, JSON.stringify(allPlans));
+              renderTreatmentPlans();
+              renderHistory();
+            });
+            actionCell.append(removeButton);
+            row.append(actionCell);
+            treatmentRows.append(row);
+          });
+        }
+
+        function render() {
+          const selectedMonth = monthInput.value;
+          const visits = readVisits()
+            .map((visit, index) => ({ ...visit, index }))
+            .filter((visit) => visit.date.startsWith(selectedMonth))
+            .sort((first, second) => second.date.localeCompare(first.date));
+          rows.replaceChildren();
+          printRows.replaceChildren();
+          count.textContent = visits.length;
+          emptyState.hidden = visits.length > 0;
+          const monthLabel = selectedMonth
+            ? new Date(Number(selectedMonth.slice(0, 4)), Number(selectedMonth.slice(5, 7)) - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+            : 'Selected month';
+          const reportVisits = visits;
+          monthCaption.textContent = `Visits recorded in ${monthLabel}`;
+          document.getElementById('printMonth').textContent = monthLabel;
+          document.getElementById('printBranch').textContent = 'Ruai and Joska branches';
+          document.getElementById('printTotal').textContent = `Total visits: ${reportVisits.length}`;
+
+          visits.forEach((visit) => {
+            const row = document.createElement('tr');
+            row.append(textCell(formatDate(visit.date)), textCell(visit.branch), textCell(visit.name), textCell(visit.age), textCell(visit.phone || ''), textCell(visit.investigationDone ?? visit.testResults ?? ''), textCell(visit.amountPaid));
+            const actionCell = document.createElement('td');
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-visit';
+            removeButton.textContent = '\u00d7';
+            removeButton.setAttribute('aria-label', `Remove visit for ${visit.name}`);
+            removeButton.addEventListener('click', () => {
+              const allVisits = readVisits();
+              allVisits.splice(visit.index, 1);
+              localStorage.setItem(storageKey, JSON.stringify(allVisits));
+              render();
+            });
+            actionCell.append(removeButton);
+            row.append(actionCell);
+            rows.append(row);
+
+          });
+
+          reportVisits.forEach((visit) => {
+            const printRow = document.createElement('tr');
+            printRow.append(textCell(formatDate(visit.date)), textCell(visit.branch), textCell(visit.name), textCell(visit.age), textCell(visit.phone || ''), textCell(visit.investigationDone ?? visit.testResults ?? ''), textCell(visit.amountPaid));
+            printRows.append(printRow);
+          });
+
+          if (reportVisits.length === 0) {
+            const row = document.createElement('tr');
+            const cell = textCell('No visits recorded for this month.');
+            cell.colSpan = 7;
+            row.append(cell);
+            printRows.append(row);
+          }
+
+          renderHistory();
+          renderTreatmentPlans();
+        }
+
+        dateInput.value = localDateValue();
+        monthInput.value = localDateValue().slice(0, 7);
+        monthInput.addEventListener('change', render);
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const visits = readVisits();
+          visits.push({ date: dateInput.value, branch: branchInput.value, name: nameInput.value.trim(), age: ageInput.value, phone: phoneInput.value.trim(), investigationDone: investigationInput.value.trim(), amountPaid: amountPaidInput.value });
+          localStorage.setItem(storageKey, JSON.stringify(visits));
+          monthInput.value = dateInput.value.slice(0, 7);
+          form.reset();
+          dateInput.value = localDateValue();
+          render();
+          nameInput.focus();
+        });
+        treatmentForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const plans = readTreatmentPlans();
+          plans.push({
+            date: localDateValue(),
+            branch: treatmentBranchInput.value,
+            patientName: document.getElementById('treatmentPatientName').value.trim(),
+            age: document.getElementById('treatmentPatientAge').value,
+            condition: document.getElementById('treatmentCondition').value.trim(),
+            treatment: document.getElementById('treatmentDetails').value.trim(),
+            amount: document.getElementById('treatmentAmount').value
+          });
+          localStorage.setItem(treatmentStorageKey, JSON.stringify(plans));
+          treatmentForm.reset();
+          renderTreatmentPlans();
+          renderHistory();
+        });
+        render();
+      })();
+    </script>
+  </body>
+</html>
